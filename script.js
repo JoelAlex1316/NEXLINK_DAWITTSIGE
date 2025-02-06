@@ -1,4 +1,14 @@
-document.getElementById("saveContact").addEventListener("click", () => {
+document.getElementById("saveContact").addEventListener("click", async () => {
+    // Convert profile picture to base64
+    const profilePic = await fetch('pp.jpg')
+        .then(response => response.blob())
+        .then(blob => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        }));
+
     // Contact information
     const contactInfo = {
         name: "Dawit Tsige",
@@ -6,7 +16,8 @@ document.getElementById("saveContact").addEventListener("click", () => {
         address: "Addis Ababa, Ethiopia",
         phone: "+251974404040",
         email: "dimkidista@yahoo.com",
-        poBox: "5912"
+        poBox: "5912",
+        photo: profilePic
     };
 
     // Generate vCard content
@@ -19,6 +30,7 @@ ADR;TYPE=WORK,PREF:;;${contactInfo.address}
 TEL;TYPE=CELL:${contactInfo.phone}
 EMAIL:${contactInfo.email}
 URL:${contactInfo.poBox}
+PHOTO;ENCODING=b;TYPE=JPEG:${contactInfo.photo.split(',')[1]}
 END:VCARD`;
 
     // Create a blob for the vCard file
